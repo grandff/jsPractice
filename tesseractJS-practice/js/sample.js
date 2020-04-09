@@ -2,6 +2,8 @@
 // 크롬, ie 구분자도 처리해야함.
 
 /* es5 */
+//export TESSDATA_PREFIX = window.location.origin + '/lang/kor/';
+
 let imageLoader;
 let canvas;
 let ctx;
@@ -21,7 +23,7 @@ $(document).ready(function(){
     // load tesseract
     worker = Tesseract.createWorker({
         logger: m => console.log(m),
-        langPath : '../lang/kor'
+        //langPath : window.location.origin + '/lang/4.0.0'
     });
 });
 
@@ -41,6 +43,7 @@ function handleImage(e){
     }
     reader.readAsDataURL(e.target.files[0]);
 
+    
     const readImage = ctx.getImageData(0, 0, canvas.width, canvas.height);    
     
     (async () => {
@@ -51,10 +54,18 @@ function handleImage(e){
         textarea.value = text;
         await worker.terminate();
     })();
+
+   // readTextFromImage()
 }
 
 function readTextFromImage(){
-    
+    Tesseract.recognize(canvas,{
+        lang : 'kor',
+        tessedit_char_blacklist : 'e',
+        progress : function(e){
+            console.log(e);
+        }
+    }).then(function(result) {textarea.value = result})
 }
 
 

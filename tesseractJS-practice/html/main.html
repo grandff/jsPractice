@@ -1,13 +1,97 @@
 <html>
 <meta http-equiv="X-UA-compatible" content="IE=edge, chrome = 1"/>
 <meta http-equiv="Content-Type" content="text/html">
+<!--
+    참고 URL 목록
+    https://bensonruan.com/image-to-text-ocr-with-tesseract-js/     -> 이건 리얼 최후의 보루로 사용할거임
+    https://github.com/naptha/tesseract.js?ref=devawesome.io
+    https://golb.hplar.ch/2019/07/ocr-with-tesseractjs.html
+-->
 <head>
     <title>Tesseract js</title>
     <script src="https://code.jquery.com/jquery-1.8.3.js" integrity="sha256-dW19+sSjW7V1Q/Z3KD1saC6NcE5TUIhLJzJbrdKzxKc=" crossorigin="anonymous"></script> <!-- jquery 1.8.3 -->
-    <script src="../js/sample.js"></script> <!-- canvas sample source -->
+    <!--<script src="../js/sample.js"></script>--> <!-- canvas sample source -->
     <script src="https://unpkg.com/tesseract.js@2.0.0/dist/tesseract.min.js"></script>  <!-- tesseract -->    
+
+    <script>
+        let context;
+        let canvas;
+
+        $( document ).ready(function() {
+            var inputs = document.querySelectorAll( '.inputfile' );
+            Array.prototype.forEach.call( inputs, function( input )
+            {
+                var label	 = input.nextElementSibling,
+                    labelVal = label.innerHTML;
+
+                input.addEventListener( 'change', function( e )
+                {
+                    var fileName = '';
+                    if( this.files && this.files.length > 1 )
+                        fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+                    else
+                        fileName = e.target.value.split( '\\' ).pop();
+
+                    if( fileName ){
+                        label.querySelector( 'span' ).innerHTML = fileName;
+
+                        let reader = new FileReader();
+                        reader.onload = function () {
+                            let dataURL = reader.result;
+                        }
+
+                        let reader = new FileReader();
+                        reader.onload = function(event){
+                            let img = new Image();
+                            img.crossOrigin = "Anonymous";      // cross domain 오류 해결용 테스트
+                            img.onload = function(){
+                                canvas.width = img.width;
+                                canvas.height = 300;        // 여기에 변수 넣어서 만약 등록번호를 못 읽은 경우 추가 처리 해주기.
+                                ctx.drawImage(img, 0, 0);
+                            }
+                            img.src = event.target.result;
+                        }
+                        let file = this.files[0];
+                        reader.readAsDataURL(file);
+
+                        
+                        const readImage = ctx.getImageData(0, 0, canvas.width, canvas.height); 
+                        
+                        
+                        startRecognize(file);
+                    }
+                    else{
+                        label.innerHTML = labelVal;
+                        $("#selected-image").attr("src", '');
+                        $("#selected-image").removeClass("col-12");
+                        $("#arrow-right").addClass("fa-arrow-right");
+                        $("#arrow-right").removeClass("fa-check");
+                        $("#arrow-right").removeClass("fa-spinner fa-spin");
+                        $("#arrow-down").addClass("fa-arrow-down");
+                        $("#arrow-down").removeClass("fa-check");
+                        $("#arrow-down").removeClass("fa-spinner fa-spin");
+                        $("#log").empty();
+                    }
+                });
+
+                // Firefox bug fix
+                input.addEventListener( 'focus', function(){ input.classList.add( 'has-focus' ); });
+                input.addEventListener( 'blur', function(){ input.classList.remove( 'has-focus' ); });
+            });
+        });
+
+        function startRecognize(file){
+            Tesseract.recognize(
+                file, $("#langsel").val(),{
+                    logger:m => console.log(m)
+                }).then(({data : {text} }) => {
+                    console.log(text);
+                })
+        }
+    </script>
 </head>
 <body>
+    <!--
     <a href="#">사진 등록 <input type="file" name="imageLoader" title="사진등록" id="imageLoader"/></a>    
     <input type="hidden" id="file_name" name="file_name" value=""/>
 
@@ -16,5 +100,18 @@
         <div id="progress"></div>
     </div>
     <textarea id="textarea" style="width:747px; height : 148px;"></textarea>
+    -->
+    <select id="langsel">
+        <option value="kor" selected>Korean</option>
+    </select>
+
+    <input type="file" id="file-1" class="inputfile"/>
+
+    <div id ="log">
+        <span id="startPre">
+            <a id ="startLink" href="#">Click here to recognize text in the demo</a>
+            <br> or choose your own image
+        </span>
+    </div>
 </body>
 </html>

@@ -1,0 +1,39 @@
+<script> 
+    const log = console.log;
+</script>
+
+# 평가
+- 코드가 계산(Evaluation) 되어 값을 만드는 것
+<script>
+    // 1 + 2는 3으로 평가가 됨
+    console.log((1 + 2) + 4)    
+</script>
+
+# 일급
+- 값으로 다룰 수 있다.
+- 변수에 담을 수 있다.
+- 함수의 인자로 사용될 수 있다.
+- 함수의 결과로 사용될 수 있다.
+
+<script>
+    const a = 10;       // a를 다룰 수 있고, 10을 다룰 수 있음
+    const add10 = a => a + 10;
+    const r = add10(a);
+    log(r);
+</script>
+
+# 일급 함수
+- 함수를 값으로 다룰 수 있다
+- 조합성과 추상화의 도구
+<script>
+    const add5 = a => a + 5;        // 이 변수에 함수를 다룰 수 있음
+    log(add5);  // 로그 확인
+    log(add5(5));   // 값을 전달해서 결과를 확인 할 수 있음
+
+    const f1 = () => () => 1;
+    log(f1());  // 함수가 함수를 전달할 수 있음
+
+    const f2 = f1();    // 함수를 다른 변수에 담을 수 있음
+    log(f2);
+    log(f2());
+</script>

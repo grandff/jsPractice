@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML 출력해보기 - 장바구니</title>
+  <script src="fx.js"></script>
+</head>
+<body>
+
+<div id="cart">
+</div>
+
+<script>
+  const products = [
+    {name: '반팔티', price: 15000, quantity: 1, is_selected : true},
+    {name: '긴팔티', price: 20000, quantity: 2, is_selected : false},
+    {name: '핸드폰케이스', price: 15000, quantity: 3, is_selected : true},
+    {name: '후드티', price: 30000, quantity: 4, is_selected : false},
+    {name: '바지', price: 25000, quantity: 5, is_selected : false}
+  ];
+
+  // add 함수 추가. 중복함수를 제거하기 위함
+  const add = (a,b) => a+b;
+
+  // map + 응용. 중복함수를 제거하기 위한 sum 함수
+  /*
+    STEP 1
+    const sum = (f, iter) => go(
+      iter,
+      map(f),
+      reduce(add)
+    );
+
+    STEP 2(curry 사용)
+    const sum = curry((f, iter) => go(
+      iter,
+      map(f),
+      reduce(add)
+    ));
+
+  */
+    const sum = curry((f, iter) => go(
+        iter,
+        map(f),
+        reduce(add)
+    ));
+
+    // sum은 products만을 위한 함수는 아님
+    log(sum(u => u.age, [
+        {age : 30},
+        {age : 20},
+        {age : 10}
+    ]));
+
+  // 전체 수량 구하기
+  /*
+    STEP 1
+    const total_quantity = products => pipe(products, map(p => p.quantity), reduce((a, b) => a+ b));
+
+    STEP 2(add 활용 및 중복 되는 부분 제거)
+    const total_quantity = pipe(map(p => p.quantity), reduce(add));
+
+    STEP 3(sum 함수 활용)
+    const total_quantity = products => sum(p => p.quantity, products);
+
+    STEP 4(curry 함수 활용)
+    const total_quantity = sum(p => p.quantity);
+  */
+  
+  const total_quantity = sum(p => p.quantity);
+  //log(total_quantity(products));
+
+  // 전체 가격 구하기
+  /*
+    STEP 1(add 활용 및 중복 되는 부분 제거)
+    const total_price = pipe(map(p => p.price * p.quantity), reduce(add));
+
+    STEP 2(sum 함수 활용)
+    const total_price = products => sum(p => p.quantity * p.price, products);
+
+    STEP 3(curry 함수 활용)
+    const total_price = sum(p => p.quantity * p.price);
+  */
+  const total_price = sum(p => p.quantity * p.price);
+  //log(total_price(products));
+
+  document.querySelector('#cart').innerHTML = `
+    <table>
+        <tr>
+            <th></th>
+            <th>샴푸 이름</th>
+            <th>가격</th>
+            <th>수량</th>
+            <th>총 가격</th>
+        </tr>
+        ${go(
+            products,
+            sum(p => `
+                <tr>
+                    <td><input type="checkbox" ${p.is_selected ? 'checked' : ''}></td>
+                    <td>${p.name}</td>            
+                    <td>${p.price}</td>            
+                    <td><input type="number" value="${p.quantity}"></td>            
+                    <td>${p.price * p.quantity}</td>            
+                </tr>
+            `)
+        )}
+        <tr>
+            <td colspan ="2">합계</td>
+            <td>${total_quantity(filter(p => p.is_selected, products))}</td>
+            <td>${total_price(filter(p => p.is_selected, products))}</td>
+        </tr>
+    </table>
+  `;
+</script>
+
+</body>
+</html>

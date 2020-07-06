@@ -55,3 +55,27 @@ go(
     reduce(add),
     log
 );
+
+// 함수 조합으로 함수 만들기
+const total_price = pipe(
+    map(p => p.price),
+    reduce(add),
+    log
+);
+
+const base_total_price = predi => pipe(
+    filter(predi),
+    total_price
+);
+
+go(
+    products,
+    base_total_price(p => p.price < 20000),
+    log
+);
+
+go(
+    products,
+    base_total_price(p => p.price > 20000),
+    log
+);

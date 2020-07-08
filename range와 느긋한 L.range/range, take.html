@@ -52,3 +52,57 @@
     test('range', 10, () => reduce(add, range(1000000)));
     test('L.range', 10, () => reduce(add, L.range(1000000)));
 </script>
+
+## take
+<script>
+    // 많은 값을 받아서 잘라줌
+    /*
+        STEP 1
+        const take = (l, iter) => {
+            let res = [];
+            for(const a of iter){
+                res.push(a);
+                if(res.length == l) return res;
+            }
+            return res;
+        };
+
+        STEP 2 : curry 적용
+
+    */
+    const take = curry((l, iter) => {
+        let res = [];
+        for(const a of iter){
+            res.push(a);
+            if(res.length == l) return res;
+        }
+        return res;
+    });
+
+    log("=========================");
+    log(range(100));
+    console.time('');
+    log(take(5, range(100)));   // 5개만 출력
+    console.timeEnd('');
+    console.time('');
+    log(take(5, L.range(100))); // L.range도 가능. 효율은 당연히 더 좋음.
+    console.timeEnd('');
+
+    // 응용
+    log("=========================");
+    console.time('');
+    go(range(10000),
+    take(5),
+    reduce(add),        // add 적용
+    log);
+    console.timeEnd('');
+
+    console.time('');
+    go(L.range(10000),          // 효율이 마찬가지로 더 좋음
+    take(5),
+    reduce(add),
+    log);
+    console.timeEnd('');
+
+    
+</script>

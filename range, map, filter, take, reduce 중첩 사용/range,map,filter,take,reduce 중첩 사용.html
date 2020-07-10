@@ -98,10 +98,10 @@
         iter = iter[Symbol.iterator]();
         let cur;
         while (!(cur = iter.next()).done) {
-        const a = cur.value;
-        if (f(a)) {
-            yield a;
-        }
+            const a = cur.value;
+            if (f(a)) {
+                yield a;
+            }
         }
     });
 

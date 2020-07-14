@@ -202,6 +202,52 @@
 
 ### take, find
 <script>
+    const users = [
+        { age : 32},
+        { age : 31},
+        { age : 37},
+        { age : 28},
+        { age : 25},
+        { age : 32},
+        { age : 31},
+        { age : 37}
+    ];
 
+    // find 함수 사용
+    /*
+        STEP 1
+        const find = (f, iter) => go(
+            iter,
+            L.filter(a => (console.log(a), f(a))),        // 그냥 filter를 사용하면 모든 iter를 순회한 후에 결과값을 가져오고 있음. 즉 효율적이지 못함. 따라서 L을 붙여줌.
+            take(1),
+            ([a]) => a
+        );
+
+        STEP 2 (curry 사용)
+        const find = curry((f, iter) => go(
+            iter,
+            L.filter(f),       
+            take(1),
+            ([a]) => a
+        ));
+
+    */
+    const find = curry((f, iter) => go(
+        iter,
+        L.filter(f),       
+        take(1),
+        ([a]) => a
+    ));
+
+    //log(find(u => u.age < 30, users));        STEP 1
+    log(find(u => u.age < 30)(users));       // STEP 2
+
+    // find 응용
+    go(
+        users,
+        L.map(u => u.age),
+        find(n => n < 30),
+        log
+    )
 
 </script>

@@ -1,0 +1,76 @@
+<script src="lib/fx.js"></script>
+
+## L.flatten
+<script>
+    log([...[1,2], 3, 4, [5, 6], [7,8,9]]);
+
+    const isIterable = a => a && a[Symbol.iterator];
+
+    // array 같은 값들을 펼친다고 생각하면 됨
+    /*
+        STEP 1
+        L.flatten = function *(iter) {
+            for (const a of iter){
+                if(isIterable(a)) for(const b of a) yield b;        // iterable이면 for문을 한번 더 돌아서 펼쳐줌
+                else yield a;               // 아닐 경우 그대로 리턴
+            }
+        };
+        
+        STEP 2 (yield * 활용)    
+        L.flatten = function *(iter){
+            for(const a of iter){
+                if(isIterable(a))  yield *a;
+                else yield a;
+            }
+        }    
+    */
+    //yield *iterable은 for(const val of iterable) yield val; 와 같음
+    L.flatten = function *(iter){
+        for(const a of iter){
+            if(isIterable(a))  yield *a;
+            else yield a;
+        }
+    }    
+
+    var it = L.flatten([...[1,2], 3, 4, [5, 6], [7,8,9]]);
+    log([...it]);
+    // take와 l.flatten 활용
+    log(take(6, L.flatten([...[1,2], 3, 4, [5, 6], [7,8,9]])));
+
+    // flatten 구현
+    const flatten = pipe(L.flatten, takeAll);
+    log(flatten([...[1,2], 3, 4, [5, 6], [7,8,9]]));
+
+    // iterable을 모두 펼쳐주는 deepflat
+    L.deepFlat = function *f(iter){
+        for(const a of iter){
+            if (isIterable(a)) yield *f(a);
+            else yield a;
+        }
+    };
+    log([...L.flatten([1, [2, [3,4], [[5]]]])]);
+</script>
+
+
+## L.flatMap
+<script>
+    // flatmap 사용
+    //log([[1,2], [3,4], [5,6,7], 8, 9, [10]].flatMap(a => a));
+    //log([[1,2], [3,4], [5,6,7], 8, 9, [10]].flatMap(a => a.map(a => a * a)));
+    log(flatten([[1,2], [3,4], [5,6,7]].map(a => a.map(a => a * a))));      // flatmap을 풀어쓴거임
+
+    // 전부다 풀고 map을 사용하다보니 효율성이 떨어짐
+    // array만 동작하므로 다형성이 높은 L.flatMap 구현
+    L.flatMap = curry(pipe(L.map, L.flatten));      // 평가를 미루거나
+    // flatMap 커스텀
+    const flatMap = curry(pipe(L.map, flatten));    // 평가를 다하거나
+
+    //var it = L.flatMap(map(a=> a*a),[[1,2], [3,4], [5,6,7]]);
+    var it = L.flatMap(a=> a,[[1,2], [3,4], [5,6,7]]);        // 또는 이렇게
+    log([...it]);
+    log(flatMap(a => a, [[1,2], [3,4], [5,6,7]]));
+
+    // flatmap 응용
+    log(flatMap(L.range, [1, 2, 3]));
+    log(flatMap(range, map(a => a + 1, [1,2,3])));
+</script>

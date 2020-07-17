@@ -1,0 +1,52 @@
+<script src="lib/fx.js"></script>
+
+# Promise
+
+## 일급
+<script>
+    // 지연 동작하는 함수 생성
+    function add10(a, callback) {
+        setTimeout(() => callback(a + 10) , 100);
+    }
+
+    // promise 와 비슷한 구조로 이해를 돕자
+    add10(5, res => {
+        add10(res, res=> {
+            add10(res, res=> {
+                log(res);
+            });
+        });
+    });
+
+
+    // promise 사용
+    function add20(a){
+        return new Promise(resolve => setTimeout(() => resolve(a + 20), 100));
+    }
+
+    // 위의 add10 보다 코드가 간결해지고 관리하기도 편해짐
+    add20(5)
+        .then(add20)
+        .then(add20)
+        .then(log);
+
+    // promise는 1급 값으로 이루어져 있음
+    // promise 의 기능 비교해보기
+    
+    var a = add10(5, res => {
+        add10(res, res=> {
+            add10(res, res=> {
+                log(res);
+            });
+        });
+    });
+
+    log(a);     // undefined
+
+    var b= add20(5)
+        .then(add20)
+        .then(add20)
+        .then(log);
+
+    log(b);
+</script>

@@ -1,0 +1,26 @@
+<script src="lib/fx.js"></script>
+
+## 일급 활용
+<script>
+    const delay100 = a => new Promise(resolve => setTimeout(() => resolve(a), 100));
+
+    const go2 = (a, f) => a instanceof Promise ? a.then(f) : f(a);
+    const add5 = a => a + 5;
+
+    var res = go2(10, add5);
+    log(res);
+
+    var res2 = go2(delay100(10), add5);
+    res2.then(log);
+
+    // 이런식으로 활용이 가능함..어렵다
+    const n1 = 10;
+    go2(go2(n1, add5), log);
+
+    const n2 = delay100(100);
+    log(go2(go2(n2, add5), log));
+    
+    // 이렇게 계속 연결해나가는게 promise의 중요함임..이라고 함
+    
+
+</script>

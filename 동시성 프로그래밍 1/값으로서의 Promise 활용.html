@@ -56,5 +56,24 @@
 
 ## Kleisli Composition
 <script type="module">
+    // f . g
+    // f(g(x)) = f(g(x)) 평가가 항상 동일함
+    // f(g(x)) = g(x)    위의 형태를 이렇게 변경하는게 지금 배우는거임....
+
+    var users = [
+        {id : 1, name : 'aa'},
+        {id : 2, name : 'bb'},
+        {id : 3, name : 'cc'}
+    ];
+
+    const getUserById = id => find(u => u.id == id, users);
+    const f = ({name}) => name;
+    const g = getUserById;
+
+    // 함수 합성
+    const fg = id => f(g(id));
+    log(fg(2));
     
+
+    // 7분 50초부터
 </script>

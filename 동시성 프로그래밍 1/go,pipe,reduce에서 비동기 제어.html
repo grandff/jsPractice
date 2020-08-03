@@ -1,0 +1,32 @@
+<script src="lib/fx.js"></script>
+
+## go, pipe, reduce에서 비동기 제어
+
+<script>
+    go(1,
+    a => a + 10,
+    a => Promise.resolve(a + 100),      // 중간에 비동기를 집어 넣으려면 reduce를 수정해줘야함(강의 중에는 이미 수정을 해놨음) 재귀로 리턴을 해줘서 처리해줌(유명함수라고 부름)
+    a => a + 1000,
+    log);
+
+
+    go(Promise.resolve(1),              // 변수를 비동기로 받을 경우 go1이라는 함수를 이용해 reduce를 수정해줬음
+        a => a + 10,
+        a => Promise.resolve(a + 100),      
+        a => a + 1000,
+        log
+    );
+
+    // 중간에 reject를 이용해 go를 멈출 수 있음
+    go(
+        Promise.resolve(1),
+        a => a + 10,
+        a => Promise.reject('error~~'),
+        a => console.log('-----'),
+        a => a+ 1000,
+        a => a + 10000,
+        log
+    ).catch(a => console.log(a));
+
+
+</script>

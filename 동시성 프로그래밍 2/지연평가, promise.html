@@ -10,7 +10,14 @@
     // promise를 사용하면 정상적인 연산이 되진 않음
     go([Promise.resolve(1),Promise.resolve(2),Promise.resolve(3)],          // 이전에 만든 go1 함수를 그대로 사용함
         L.map(a => a + 10),
-        take(2),
+        take(2),            // take 함수를 수정해주면 되는데.. 너무 어렵다잉
         log);
 
+
+    // 함수로 promise가 들어와도 정상동작함
+    go([1,2,3],
+    L.map(a => Promise.resolve(a + 10)),
+    take(2),
+    log
+    )
 </script>

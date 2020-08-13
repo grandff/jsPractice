@@ -21,3 +21,25 @@
     log
     )
 </script>
+
+## Kleisli Composition - L.filter, filter, nop, take
+<script>
+    log("Klei on");
+    go([1,2,3,4,5,6],
+    L.map(a => Promise.resolve(a * a)),
+    L.filter(a => a % 2),       // map을 통해 오는 값 자체가 promise라서 오류가 발생함. L.filter 수정함.
+    take(2),
+    log);
+
+    go([1,2,3,4,5,6],
+    L.map(a => Promise.resolve(a * a)),
+    L.filter(a => a % 2),       // map을 통해 오는 값 자체가 promise라서 오류가 발생함. L.filter 수정함.
+    L.map(a => {
+
+    }),
+    take(2),
+    log);
+
+    // 5분밖에 안들음ㅋㅋ어휴
+
+</script>
